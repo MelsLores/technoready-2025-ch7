@@ -1,35 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1762489953206" clover="3.2.0">
-  <project timestamp="1762489953206" name="All files">
-    <metrics statements="26" coveredstatements="26" conditionals="17" coveredconditionals="17" methods="7" coveredmethods="6" elements="50" coveredelements="49" complexity="0" loc="26" ncloc="26" packages="1" files="1" classes="1"/>
+<coverage generated="1762575923881" clover="3.2.0">
+  <project timestamp="1762575923882" name="All files">
+    <metrics statements="39" coveredstatements="39" conditionals="43" coveredconditionals="40" methods="9" coveredmethods="9" elements="91" coveredelements="88" complexity="0" loc="39" ncloc="39" packages="1" files="1" classes="1"/>
     <file name="cityGraph.js" path="C:\Users\NITRO 5\Documents\3-Techno ready\CH 7\ch7techno\frontend-js\src\cityGraph.js">
-      <metrics statements="26" coveredstatements="26" conditionals="17" coveredconditionals="17" methods="7" coveredmethods="6"/>
-      <line num="5" count="5" type="stmt"/>
-      <line num="6" count="20" type="stmt"/>
-      <line num="7" count="5" type="stmt"/>
-      <line num="8" count="5" type="stmt"/>
-      <line num="9" count="5" type="stmt"/>
-      <line num="10" count="5" type="stmt"/>
-      <line num="12" count="5" type="stmt"/>
-      <line num="14" count="5" type="stmt"/>
-      <line num="18" count="5" type="cond" truecount="4" falsecount="0"/>
-      <line num="19" count="2" type="stmt"/>
-      <line num="21" count="7" type="stmt"/>
-      <line num="22" count="7" type="stmt"/>
-      <line num="23" count="3" type="stmt"/>
-      <line num="24" count="5" type="stmt"/>
-      <line num="25" count="5" type="stmt"/>
-      <line num="26" count="5" type="cond" truecount="4" falsecount="0"/>
-      <line num="27" count="4" type="stmt"/>
-      <line num="28" count="4" type="stmt"/>
-      <line num="29" count="4" type="stmt"/>
-      <line num="31" count="2" type="stmt"/>
-      <line num="35" count="3" type="cond" truecount="4" falsecount="0"/>
-      <line num="36" count="2" type="cond" truecount="2" falsecount="0"/>
-      <line num="37" count="1" type="stmt"/>
-      <line num="38" count="1" type="stmt"/>
-      <line num="39" count="3" type="cond" truecount="2" falsecount="0"/>
-      <line num="41" count="1" type="stmt"/>
+      <metrics statements="39" coveredstatements="39" conditionals="43" coveredconditionals="40" methods="9" coveredmethods="9"/>
+      <line num="6" count="41" type="cond" truecount="2" falsecount="0"/>
+      <line num="10" count="22" type="cond" truecount="3" falsecount="1"/>
+      <line num="11" count="22" type="cond" truecount="2" falsecount="0"/>
+      <line num="12" count="21" type="cond" truecount="4" falsecount="0"/>
+      <line num="13" count="2" type="stmt"/>
+      <line num="19" count="12" type="stmt"/>
+      <line num="20" count="48" type="stmt"/>
+      <line num="21" count="12" type="stmt"/>
+      <line num="22" count="12" type="stmt"/>
+      <line num="23" count="12" type="stmt"/>
+      <line num="24" count="12" type="stmt"/>
+      <line num="26" count="12" type="stmt"/>
+      <line num="28" count="12" type="stmt"/>
+      <line num="39" count="13" type="cond" truecount="4" falsecount="0"/>
+      <line num="40" count="2" type="stmt"/>
+      <line num="43" count="11" type="stmt"/>
+      <line num="45" count="19" type="stmt"/>
+      <line num="46" count="19" type="stmt"/>
+      <line num="49" count="8" type="stmt"/>
+      <line num="51" count="8" type="stmt"/>
+      <line num="52" count="14" type="cond" truecount="4" falsecount="0"/>
+      <line num="53" count="12" type="stmt"/>
+      <line num="54" count="12" type="stmt"/>
+      <line num="55" count="12" type="cond" truecount="4" falsecount="0"/>
+      <line num="56" count="11" type="cond" truecount="2" falsecount="0"/>
+      <line num="58" count="10" type="stmt"/>
+      <line num="59" count="10" type="cond" truecount="2" falsecount="0"/>
+      <line num="60" count="9" type="stmt"/>
+      <line num="62" count="9" type="stmt"/>
+      <line num="63" count="9" type="stmt"/>
+      <line num="64" count="9" type="stmt"/>
+      <line num="67" count="5" type="stmt"/>
+      <line num="74" count="7" type="cond" truecount="4" falsecount="0"/>
+      <line num="75" count="6" type="cond" truecount="2" falsecount="0"/>
+      <line num="77" count="5" type="stmt"/>
+      <line num="78" count="5" type="stmt"/>
+      <line num="79" count="13" type="cond" truecount="2" falsecount="0"/>
+      <line num="82" count="5" type="stmt"/>
+      <line num="83" count="3" type="cond" truecount="4" falsecount="2"/>
     </file>
   </project>
 </coverage>

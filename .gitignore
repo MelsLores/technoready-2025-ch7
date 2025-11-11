@@ -127,10 +127,15 @@ hs_err_pid*
 
 # Screenshots and images for documentation
 screenshots/
-*.png
+# Exclude most images but allow specific documentation screenshots
 *.jpg
 *.jpeg
 *.gif
+# Allow specific Sprint 2 documentation images
+!coverage.png
+!detailed_coverage.png
+!jest-test-ex.png
+!tests-build.png
 
 # Documentation backup files
 README\ BASEE.md

@@ -1,11 +1,27 @@
-// Grafo de ciudades cercanas y distancias (Haversine) — Sprint 2
-// Se fortalecieron validaciones y manejo de bordes.
-// API pública: haversineKm(a,b), buildGraph(nodes, edges), findNearby(graph, cityId, maxKm)
+/**
+ * City Graph Visualization Module - Sprint 2
+ * Enhanced validations and edge case handling for robust graph operations.
+ * Public API: haversineKm(a,b), buildGraph(nodes, edges), findNearby(graph, cityId, maxKm)
+ * 
+ * @author Melany Rivera, Ricardo Ruiz
+ * @date 10/11/2025
+ */
 
+/**
+ * Validates if a value is a finite number
+ * @param {*} x - Value to validate
+ * @returns {boolean} True if x is a finite number
+ */
 function isFiniteNumber(x) {
   return typeof x === "number" && Number.isFinite(x);
 }
 
+/**
+ * Validates a node object structure and properties
+ * @param {Object} n - Node object to validate
+ * @throws {TypeError} When node is not an object or has invalid coordinates
+ * @throws {Error} When node is missing required id property
+ */
 function validateNode(n) {
   if (!n || typeof n !== "object") throw new TypeError("node must be object");
   if (!("id" in n)) throw new Error("node.id required");
@@ -14,9 +30,18 @@ function validateNode(n) {
   }
 }
 
-/** Distancia Haversine en km entre dos puntos {lat, lon}. */
+/**
+ * Calculates the Haversine distance in kilometers between two geographic points
+ * @param {Object} a - First point with {lat, lon} properties
+ * @param {Object} b - Second point with {lat, lon} properties
+ * @returns {number} Distance in kilometers between the two points
+ * @example
+ * const monterrey = { lat: 25.6866, lon: -100.3161 };
+ * const saltillo = { lat: 25.4383, lon: -100.9737 };
+ * const distance = haversineKm(monterrey, saltillo); // ~85.2 km
+ */
 export function haversineKm(a, b) {
-  const R = 6371;
+  const R = 6371; // Earth's radius in kilometers
   const toRad = d => (d * Math.PI) / 180;
   const dLat = toRad(b.lat - a.lat);
   const dLon = toRad(b.lon - a.lon);
@@ -29,11 +54,25 @@ export function haversineKm(a, b) {
 }
 
 /**
- * Construye un grafo no dirigido con pesos (km).
- * nodes: [{id, name?, lat, lon}], edges: [{from, to}]
- * - Valida arrays, nodos y que las aristas referencien nodos existentes.
- * - Ignora self-loops (from === to).
- * - De-duplica aristas (MTY-SAL y SAL-MTY se cuentan una vez).
+ * Builds an undirected weighted graph with distances in kilometers
+ * @param {Array<Object>} nodes - Array of node objects [{id, name?, lat, lon}]
+ * @param {Array<Object>} edges - Array of edge objects [{from, to}]
+ * @returns {Object} Graph object with byId Map and adj Map for adjacency lists
+ * @throws {TypeError} When nodes or edges are not arrays, or when nodes have invalid properties
+ * @throws {Error} When edges reference non-existent nodes
+ * 
+ * Features:
+ * - Validates arrays, nodes, and that edges reference existing nodes
+ * - Ignores self-loops (from === to)
+ * - Deduplicates edges (MTY-SAL and SAL-MTY count as one edge)
+ * 
+ * @example
+ * const nodes = [
+ *   { id: "MTY", name: "Monterrey", lat: 25.6866, lon: -100.3161 },
+ *   { id: "SAL", name: "Saltillo", lat: 25.4383, lon: -100.9737 }
+ * ];
+ * const edges = [{ from: "MTY", to: "SAL" }];
+ * const graph = buildGraph(nodes, edges);
  */
 export function buildGraph(nodes, edges) {
   if (!Array.isArray(nodes) || !Array.isArray(edges)) {
@@ -68,7 +107,16 @@ export function buildGraph(nodes, edges) {
 }
 
 /**
- * Vecinos dentro de un radio maxKm (inclusive), ordenados por distancia y luego por id.
+ * Finds neighboring cities within a specified radius, sorted by distance then by ID
+ * @param {Object} graph - Graph object with byId and adj Maps
+ * @param {string} cityId - ID of the city to find neighbors for
+ * @param {number} [maxKm=200] - Maximum distance in kilometers (inclusive)
+ * @returns {Array<Object>} Array of nearby cities [{cityId, km}] sorted by distance, then by ID
+ * @throws {Error} When graph is invalid or cityId doesn't exist
+ * 
+ * @example
+ * const nearby = findNearby(graph, "MTY", 100);
+ * // Returns: [{ cityId: "SAL", km: 85.2 }, { cityId: "QRO", km: 95.4 }]
  */
 export function findNearby(graph, cityId, maxKm = 200) {
   if (!graph?.byId || !graph?.adj) throw new Error("invalid graph");

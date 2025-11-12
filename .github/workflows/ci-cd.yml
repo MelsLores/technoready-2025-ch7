@@ -1,0 +1,204 @@
+name: BookingMx CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  JAVA_VERSION: '17'
+  NODE_VERSION: '16'
+  COVERAGE_THRESHOLD: '90'
+
+jobs:
+  # Java Backend Testing
+  java-tests:
+    name: Java Backend Tests & Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Run Maven tests with JaCoCo
+      run: mvn clean test jacoco:report
+      
+    - name: Verify coverage thresholds
+      run: mvn jacoco:check
+      
+    - name: Upload Java coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./target/site/jacoco/jacoco.xml
+        flags: java-backend
+        name: java-coverage
+        
+    - name: Archive Java test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: java-test-results
+        path: target/surefire-reports/
+        
+    - name: Archive Java coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: java-coverage-report
+        path: target/site/jacoco/
+
+  # JavaScript Frontend Testing
+  javascript-tests:
+    name: JavaScript Frontend Tests & Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: frontend-js/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./frontend-js
+      run: npm ci
+      
+    - name: Run Jest tests with coverage
+      working-directory: ./frontend-js
+      run: npm test -- --coverage --coverageReporters=text --coverageReporters=lcov
+      
+    - name: Upload JS coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./frontend-js/coverage/lcov.info
+        flags: javascript-frontend
+        name: js-coverage
+        
+    - name: Archive JS test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: js-test-results
+        path: frontend-js/coverage/
+        
+    - name: Check coverage thresholds
+      working-directory: ./frontend-js
+      run: |
+        echo "Verifying coverage meets ${{ env.COVERAGE_THRESHOLD }}% threshold"
+        npm test -- --coverage --coverageThreshold='{"global":{"statements":90,"branches":85,"functions":90,"lines":90}}'
+
+  # Code Quality Analysis
+  code-quality:
+    name: Code Quality & Security Scan
+    runs-on: ubuntu-latest
+    needs: [java-tests, javascript-tests]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: SonarCloud Scan (Java)
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      continue-on-error: true
+      
+    - name: Run ESLint (JavaScript)
+      working-directory: ./frontend-js
+      run: |
+        npm install eslint --save-dev
+        npx eslint src/ --ext .js
+      continue-on-error: true
+
+  # Build & Package
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [java-tests, javascript-tests]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Build Java backend
+      run: mvn clean package -DskipTests
+      
+    - name: Archive Java artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: java-artifacts
+        path: target/*.jar
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: Build JavaScript bundle
+      working-directory: ./frontend-js
+      run: |
+        npm ci
+        echo "JavaScript module ready for deployment"
+
+  # Integration Tests (Future)
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Run integration tests
+      run: echo "Integration tests will be added in future sprints"
+      continue-on-error: true
+
+  # Deployment (Production)
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, code-quality]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://bookingmx.example.com
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Deploy application
+      run: |
+        echo "Deployment to production environment"
+        echo "Application will be deployed using Docker/Kubernetes"
+      env:
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        API_URL: ${{ secrets.API_URL }}
+        
+    - name: Notify deployment status
+      if: always()
+      run: |
+        echo "Deployment completed. Status: ${{ job.status }}"

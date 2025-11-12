@@ -2,17 +2,275 @@
  * Comprehensive unit tests for city graph visualization module
  * Tests nearby cities display, distance calculations, edge cases, and error handling
  * 
+ * Sprint 3: Added OOP tests for DistanceCalculator, GeoNode, and CityGraph classes
+ * 
  * @author Melany Rivera, Ricardo Ruiz
- * @date 10/11/2025
+ * @date 11/11/2025 - Added OOP class tests
  */
 
-import { buildGraph, findNearby, haversineKm } from "./cityGraph.js";
+import { 
+  buildGraph, 
+  findNearby, 
+  haversineKm,
+  DistanceCalculator,
+  GeoNode,
+  CityGraph
+} from "./cityGraph.js";
 
 // Test cities with real approximate coordinates
 const MTY = { id: "MTY", name: "Monterrey", lat: 25.6866, lon: -100.3161 };
 const SAL = { id: "SAL", name: "Saltillo",  lat: 25.4383, lon: -100.9737 };
 const TAM = { id: "TAM", name: "Tampico",   lat: 22.2553, lon:  -97.8686 };
 const QRO = { id: "QRO", name: "Querétaro", lat: 20.5888, lon: -100.3899 };
+
+// ===========================================
+// SPRINT 3: OOP CLASS TESTS
+// ===========================================
+
+describe("DistanceCalculator (OOP)", () => {
+  test("haversine() calculates distance correctly between two points", () => {
+    const distance = DistanceCalculator.haversine(MTY, SAL);
+    expect(distance).toBeGreaterThan(70);
+    expect(distance).toBeLessThan(100);
+  });
+
+  test("haversine() returns zero for identical coordinates", () => {
+    const distance = DistanceCalculator.haversine(MTY, MTY);
+    expect(distance).toBeCloseTo(0, 5);
+  });
+
+  test("haversine() handles North and South pole edge case", () => {
+    const northPole = { lat: 90, lon: 0 };
+    const southPole = { lat: -90, lon: 0 };
+    const distance = DistanceCalculator.haversine(northPole, southPole);
+    expect(distance).toBeCloseTo(20015.1, 0);
+  });
+
+  test("isFiniteNumber() validates finite numbers correctly", () => {
+    expect(DistanceCalculator.isFiniteNumber(42)).toBe(true);
+    expect(DistanceCalculator.isFiniteNumber(0)).toBe(true);
+    expect(DistanceCalculator.isFiniteNumber(-3.14)).toBe(true);
+    expect(DistanceCalculator.isFiniteNumber(Infinity)).toBe(false);
+    expect(DistanceCalculator.isFiniteNumber(NaN)).toBe(false);
+    expect(DistanceCalculator.isFiniteNumber("42")).toBe(false);
+    expect(DistanceCalculator.isFiniteNumber(null)).toBe(false);
+  });
+
+  test("EARTH_RADIUS_KM constant is correct", () => {
+    expect(DistanceCalculator.EARTH_RADIUS_KM).toBe(6371);
+  });
+});
+
+describe("GeoNode (OOP)", () => {
+  test("constructor creates valid GeoNode with all properties", () => {
+    const node = new GeoNode("MTY", 25.6866, -100.3161, "Monterrey");
+    expect(node.id).toBe("MTY");
+    expect(node.lat).toBe(25.6866);
+    expect(node.lon).toBe(-100.3161);
+    expect(node.name).toBe("Monterrey");
+  });
+
+  test("constructor creates GeoNode without optional name", () => {
+    const node = new GeoNode("SAL", 25.4383, -100.9737);
+    expect(node.id).toBe("SAL");
+    expect(node.name).toBe(null);
+  });
+
+  test("constructor throws Error when id is missing", () => {
+    expect(() => new GeoNode(null, 25, -100)).toThrow("node.id required");
+    expect(() => new GeoNode("", 25, -100)).toThrow("node.id required");
+  });
+
+  test("constructor throws TypeError when lat is not finite", () => {
+    expect(() => new GeoNode("X", NaN, -100)).toThrow(TypeError);
+    expect(() => new GeoNode("X", Infinity, -100)).toThrow(TypeError);
+    expect(() => new GeoNode("X", "25", -100)).toThrow(TypeError);
+  });
+
+  test("constructor throws TypeError when lon is not finite", () => {
+    expect(() => new GeoNode("X", 25, NaN)).toThrow(TypeError);
+    expect(() => new GeoNode("X", 25, Infinity)).toThrow(TypeError);
+    expect(() => new GeoNode("X", 25, "-100")).toThrow(TypeError);
+  });
+
+  test("distanceTo() calculates correct distance to another node", () => {
+    const mtyNode = new GeoNode("MTY", 25.6866, -100.3161);
+    const salNode = new GeoNode("SAL", 25.4383, -100.9737);
+    const distance = mtyNode.distanceTo(salNode);
+    expect(distance).toBeGreaterThan(70);
+    expect(distance).toBeLessThan(100);
+  });
+
+  test("fromObject() creates GeoNode from plain object", () => {
+    const node = GeoNode.fromObject(MTY);
+    expect(node).toBeInstanceOf(GeoNode);
+    expect(node.id).toBe("MTY");
+    expect(node.lat).toBe(25.6866);
+    expect(node.lon).toBe(-100.3161);
+    expect(node.name).toBe("Monterrey");
+  });
+
+  test("fromObject() throws TypeError when object is null", () => {
+    expect(() => GeoNode.fromObject(null)).toThrow(TypeError);
+    expect(() => GeoNode.fromObject(null)).toThrow("node must be object");
+  });
+
+  test("fromObject() throws TypeError when not an object", () => {
+    expect(() => GeoNode.fromObject("invalid")).toThrow(TypeError);
+    expect(() => GeoNode.fromObject(123)).toThrow(TypeError);
+  });
+});
+
+describe("CityGraph (OOP)", () => {
+  const nodes = [MTY, SAL, TAM, QRO];
+  const edges = [
+    { from: "MTY", to: "SAL" },
+    { from: "MTY", to: "TAM" },
+    { from: "MTY", to: "QRO" }
+  ];
+
+  test("constructor creates valid CityGraph", () => {
+    const graph = new CityGraph(nodes, edges);
+    expect(graph).toBeInstanceOf(CityGraph);
+    expect(graph.nodeCount).toBe(4);
+  });
+
+  test("constructor throws TypeError when nodes is not array", () => {
+    expect(() => new CityGraph(null, [])).toThrow(TypeError);
+    expect(() => new CityGraph({}, [])).toThrow(TypeError);
+    expect(() => new CityGraph(null, [])).toThrow("nodes and edges must be arrays");
+  });
+
+  test("constructor throws TypeError when edges is not array", () => {
+    expect(() => new CityGraph([], null)).toThrow(TypeError);
+    expect(() => new CityGraph([], {})).toThrow(TypeError);
+  });
+
+  test("constructor ignores self-loops", () => {
+    const graph = new CityGraph(
+      [MTY, SAL],
+      [
+        { from: "MTY", to: "MTY" }, // self-loop
+        { from: "MTY", to: "SAL" }
+      ]
+    );
+    const neighbors = graph.getNeighbors("MTY");
+    expect(neighbors.length).toBe(1);
+    expect(neighbors[0].to).toBe("SAL");
+  });
+
+  test("constructor deduplicates bidirectional edges", () => {
+    const graph = new CityGraph(
+      [MTY, SAL],
+      [
+        { from: "MTY", to: "SAL" },
+        { from: "SAL", to: "MTY" } // duplicate
+      ]
+    );
+    const mtyNeighbors = graph.getNeighbors("MTY");
+    expect(mtyNeighbors.length).toBe(1);
+  });
+
+  test("getNode() returns correct GeoNode", () => {
+    const graph = new CityGraph(nodes, edges);
+    const mtyNode = graph.getNode("MTY");
+    expect(mtyNode).toBeInstanceOf(GeoNode);
+    expect(mtyNode.id).toBe("MTY");
+  });
+
+  test("getNode() returns undefined for non-existent city", () => {
+    const graph = new CityGraph(nodes, edges);
+    expect(graph.getNode("XXX")).toBeUndefined();
+  });
+
+  test("hasCity() returns true for existing city", () => {
+    const graph = new CityGraph(nodes, edges);
+    expect(graph.hasCity("MTY")).toBe(true);
+    expect(graph.hasCity("SAL")).toBe(true);
+  });
+
+  test("hasCity() returns false for non-existent city", () => {
+    const graph = new CityGraph(nodes, edges);
+    expect(graph.hasCity("XXX")).toBe(false);
+  });
+
+  test("getNeighbors() returns correct neighbors", () => {
+    const graph = new CityGraph(nodes, edges);
+    const neighbors = graph.getNeighbors("MTY");
+    expect(neighbors.length).toBe(3);
+    expect(neighbors.every(n => n.to && typeof n.dist === 'number')).toBe(true);
+  });
+
+  test("getNeighbors() throws Error for unknown city", () => {
+    const graph = new CityGraph(nodes, edges);
+    expect(() => graph.getNeighbors("XXX")).toThrow("unknown city");
+  });
+
+  test("findNearby() returns cities within radius sorted correctly", () => {
+    const graph = new CityGraph(nodes, edges);
+    const nearby = graph.findNearby("MTY", 1000);
+    expect(nearby.length).toBeGreaterThan(0);
+    expect(nearby[0]).toHaveProperty("cityId");
+    expect(nearby[0]).toHaveProperty("km");
+  });
+
+  test("findNearby() uses default radius of 200km", () => {
+    const graph = new CityGraph(
+      [MTY, SAL, TAM],
+      [{ from: "MTY", to: "SAL" }, { from: "MTY", to: "TAM" }]
+    );
+    const nearby = graph.findNearby("MTY"); // no maxKm parameter
+    const ids = nearby.map(n => n.cityId);
+    expect(ids).toContain("SAL"); // ~85km, within 200km
+    expect(ids).not.toContain("TAM"); // ~500km, outside 200km
+  });
+
+  test("findNearby() returns empty array for small radius", () => {
+    const graph = new CityGraph(nodes, edges);
+    const nearby = graph.findNearby("MTY", 1);
+    expect(nearby).toEqual([]);
+  });
+
+  test("getAllNodes() returns all GeoNode instances", () => {
+    const graph = new CityGraph(nodes, edges);
+    const allNodes = graph.getAllNodes();
+    expect(allNodes.length).toBe(4);
+    expect(allNodes.every(n => n instanceof GeoNode)).toBe(true);
+  });
+
+  test("nodeCount property returns correct count", () => {
+    const graph = new CityGraph(nodes, edges);
+    expect(graph.nodeCount).toBe(4);
+  });
+
+  test("toLegacyFormat() returns compatible structure", () => {
+    const graph = new CityGraph([MTY, SAL], [{ from: "MTY", to: "SAL" }]);
+    const legacy = graph.toLegacyFormat();
+    expect(legacy).toHaveProperty("byId");
+    expect(legacy).toHaveProperty("adj");
+    expect(legacy.byId).toBeInstanceOf(Map);
+    expect(legacy.adj).toBeInstanceOf(Map);
+  });
+
+  test("constructor validates edge objects", () => {
+    expect(() => new CityGraph([MTY, SAL], [null])).toThrow(TypeError);
+    expect(() => new CityGraph([MTY, SAL], [42])).toThrow(TypeError);
+  });
+
+  test("constructor throws Error when edge references unknown node", () => {
+    expect(() => new CityGraph([MTY], [{ from: "MTY", to: "XXX" }]))
+      .toThrow("edge references unknown node");
+  });
+
+  test("constructor validates node properties", () => {
+    const badNode = { id: "BAD", lat: "25", lon: -100 };
+    expect(() => new CityGraph([badNode], [])).toThrow(TypeError);
+  });
+});
+
+// ===========================================
+// LEGACY FUNCTIONAL API TESTS
+// ===========================================
 
 describe("haversineKm", () => {
   test("Monterrey–Saltillo ~70–100 km", () => {

@@ -2117,14 +2117,6 @@ logs/
 
 ## 💼 Economic Report & Professional Services Proposal
 
-### Project Information
-**Client:** Digital NAO - TechnoReady 2025 Challenge 7  
-**Project:** BookingMx Reservation System  
-**NAO ID:** 3332  
-**Date:** November 12, 2025  
-**Pathway:** Technoready Bécalos  
-**Challenge:** Java and JavaScript - Programming Procedures
-
 ### Professional Team
 
 **Melany Paola Rivera Lores**  

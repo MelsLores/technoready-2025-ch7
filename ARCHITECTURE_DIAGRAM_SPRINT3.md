@@ -19,7 +19,7 @@ Version: 3.0
 â”‚  â”‚   JavaScript Frontend (OOP)  â”‚       â”‚      Java Backend               â”‚    â”‚
 â”‚  â”‚   City Graph Module          â”‚       â”‚   Reservation Service           â”‚    â”‚
 â”‚  â”‚   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€       â”‚       â”‚   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€            â”‚    â”‚
-â”‚  â”‚   âœ¨ NEW: Class-Based        â”‚       â”‚   Business Logic Layer          â”‚    â”‚
+â”‚  â”‚   NEW: Class-Based        â”‚       â”‚   Business Logic Layer          â”‚    â”‚
 â”‚  â”‚   - DistanceCalculator       â”‚       â”‚   - ReservationService          â”‚    â”‚
 â”‚  â”‚   - GeoNode                  â”‚       â”‚   - Validation Engine           â”‚    â”‚
 â”‚  â”‚   - CityGraph                â”‚       â”‚   - Status Management           â”‚    â”‚
@@ -664,4 +664,5 @@ Legend: âœ… Achieved | ðŸŸ¡ In Progress | ðŸ”œ Planned
 *Architecture Documentation - Version 3.0*  
 *Last Updated: November 11, 2025*  
 *Authors: Melany Rivera & Ricardo Ruiz*  
+
 
